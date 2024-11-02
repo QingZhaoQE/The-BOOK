@@ -1,2 +1,2 @@
 # The-BOOK
-Code and simulated covariate data for the book "Bayesian Analysis of Spatially Structured Population Dynamics"
+Code in Chapter 5
