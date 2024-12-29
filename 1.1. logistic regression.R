@@ -4,7 +4,7 @@
 # written by Qing Zhao, 2023 in Colorado
 #=================================================================================================
 
-setwd('c:/Zhao/RESEARCH/C. model/a. SDNM/b. The BOOK/Chapter 1_Background/')
+#setwd('')
 
 #===============
 # Simulate data
@@ -91,8 +91,6 @@ end_time <- Sys.time() # end time of computing
 time_taken <- end_time - start_time # computing time
 time_taken
 
-pdf(file='1.1 logistic regression_chains.pdf', width=10, height=8)
-
 library(rstan) # for calculating rhat statistics
 
 cols <- c('gold', 'tomato', 'royalblue')
@@ -131,51 +129,5 @@ for (i in 1:(ncovs+1)) {
 
 title(xlab='Iteration', cex.lab=2.5, line=2.6, outer=T)
 title(ylab='Posterior Value', cex.lab=2.5, line=1.2, outer=T)
-
-dev.off()
-
-# Evaluate bias
-numCores <- round(detectCores() / 2) # only use half of the cores for parallel computing
-registerDoParallel(numCores) # setup parallel computing
-
-nsims <- 100   # number of simulations
-nmcmc <- 50000 # number of iterations
-chain <- 3     # number of chains
-
-set.seed(NULL) # remove seed to generate a different dataset each time
-out_nsims <- list()
-for (sim in 1:nsims) {
-  data <- data_sim(nsite=nsite, ncovs=ncovs, beta=beta)
-  out_nsims[[sim]] <- foreach (i=1:chain, .packages='boot') %dopar% {
-    logistic_mcmc(y=data$y, x=data$x, nmcmc=nmcmc)
-  } # i
-} # sim
-stopImplicitCluster() # clean up the cluster
-
-pdf(file='1.2 logistic regression_violin.pdf', width=10, height=8)
-
-library(vioplot) # for making violin plots
-
-par(mfrow=c(2,2))
-par(mar=c(1,3,3,1))
-par(oma=c(0,3,0,0))
-
-for (i in 1:(ncovs+1)) {
-  tt <- array(, dim=c(nmcmc*0.8, chain, nsims))
-  for (s in 1:nsims) {
-    for (j in 1:chain) {
-      tt[,j,s] <- out_nsims[[s]][[j]]$beta_save[i,(nmcmc*0.2+1):nmcmc]
-    } # j
-  } # s
-  plot(1, type='n', ylim=c(beta[i]-1,beta[i]+1), xlab='', ylab='', axes=F)
-  vioplot(tt, col='lightcoral', rectCol='grey36', lineCol='grey36', border=NA, wex=0.8, cex=1.8, add=T)
-  abline(h=beta[i], col='royalblue', lwd=1.5)
-  axis(2, at=seq(beta[i]-1,beta[i]+1,length.out=5), cex.axis=1.5, las=2)
-  title(main=ylab_beta[i], cex.main=2, line=1.2)
-} # i
-
-title(ylab='Posterior Value', cex.lab=2.5, line=1.2, outer=T)
-
-dev.off()
 
 
