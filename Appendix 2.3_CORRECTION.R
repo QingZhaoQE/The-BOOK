@@ -5,7 +5,7 @@
 # written by Qing Zhao, 2026 in Colorado
 #=================================================================================================
 
-setwd('c:/Zhao/RESEARCH/C. model/a. SDNM/b. The BOOK/Chapter 2_Occupancy models/')
+#setwd('')
 
 #===============
 # Simulate data
@@ -332,7 +332,7 @@ library(doParallel) # for parallel computing
 numCores <- round(detectCores() / 2) # only use half of the cores for parallel computing
 registerDoParallel(numCores) # setup parallel computing
 
-nmcmc <- 500 # number of iterations
+nmcmc <- 50000 # number of iterations
 chain <- 3     # number of chains
 
 start_time <- Sys.time() # start time of computing
