@@ -1,4 +1,4 @@
 I found some mistakes in the code, particularly for any dynamic models (the code for static models seems to be correct). I am trying to make corrections, but can only do it slowly. 
-If you go to a branch, please look for the file with the word "CORRECTION" in the file name; that is the version you want to use (for that certain model).
+If you go to a branch, please look for the file with the word "CORRECTION" in the file name for a certain model; that is the version you want to use.
 If a model doesn't have the corrected version, that means either it's a static model and doesn't need to be corrected, or I haven't found time to do the correction yet.
 Very sorry for the inconvenience!!
