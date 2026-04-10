@@ -182,7 +182,6 @@ dynam_occu_mcmc <- function(y, x, w, nmcmc) {
     for (t in 1:nyear) {
 
       #--- Step 1: Calculate the prior occupancy probability ---
-      # prob_occupy_prior is Pr(z_t | beta0) for t = 1 and Pr(z_t | z_t-1) for t >= 2
 
       if (t == 1) {
         # First year: occupancy is driven by the initial occupancy probability (beta0)
@@ -194,15 +193,13 @@ dynam_occu_mcmc <- function(y, x, w, nmcmc) {
       }
 
       #--- Step 2: Calculate the local observation likelihood ---
-      # Local observation Likelihood: If all replicates are zero, likelihood is the product of (1 - p)
-      # This represents P(y[t]=0 | z[t]=1)
-      # prob_observe_all_zeros is Pr(y_t=0 | z_t=1)
+      # Probability of observing all zeros given z=1: Pr(y_t=0 | z_t=1)
+      # If ysum > 0, this value is irrelevant as z will be fixed to 1
 
-      prob_observe_all_zeros <- apply(1 - p[,t,], 1, prod)
+      prob_observe_all_zeros <- exp(rowSums(log(1 - p[,t,] + 1e-15))) # this is a faster way of doing it
 
 
       #--- Step 3: Calculate future state dependency (The Markovian link) ---
-      # We calculate how well the current state z[t] explains the next state z[t+1]
       # prob_future_if_occupied is Pr(z_t+1 | z_t=1)
       # prob_future_if_empty    is Pr(z_t+1 | z_t=0)
 
@@ -222,7 +219,7 @@ dynam_occu_mcmc <- function(y, x, w, nmcmc) {
       }
 
 
-      #--- Step 4: Bayesian posterior calculation ---
+      #--- Step 4: Bayesian posterior calculation and sample ---
 
       # Weight for z=1: Prior * Local Likelihood * Future Constraint
       weight_z_is_1 <- prob_occupy_prior * prob_observe_all_zeros * prob_future_if_occupied
@@ -230,10 +227,7 @@ dynam_occu_mcmc <- function(y, x, w, nmcmc) {
       # Weight for z=0: (1 - Prior) * 1 (Likelihood is 1 since y must be 0) * Future Constraint
       weight_z_is_0 <- (1 - prob_occupy_prior) * 1 * prob_future_if_empty
 
-
-      #--- Step 5: Normalize and sample ---
-
-      # Posterior probability: P(z=1 | data) = weight_z1 / (weight_z1 + weight_z0)
+      # Normalize: calculate the posterior probability of z=1
       prob_posterior_z1 <- weight_z_is_1 / (weight_z_is_1 + weight_z_is_0)
 
       # Only update sites where the species was NOT detected (ysum == 0)
@@ -268,7 +262,7 @@ library(doParallel) # for parallel computing
 numCores <- round(detectCores() / 2) # only use half of the cores for parallel computing
 registerDoParallel(numCores) # setup parallel computing
 
-nmcmc <- 500 # number of iterations
+nmcmc <- 50000 # number of iterations
 chain <- 3     # number of chains
 
 start_time <- Sys.time() # start time of computing
