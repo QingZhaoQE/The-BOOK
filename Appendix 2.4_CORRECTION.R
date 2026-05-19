@@ -177,11 +177,9 @@ dist_dynam_occu_mcmc <- function(y, x, w, d, nmcmc) {
       gamma_star[, t-1] <- as.numeric(theta_star %*% z[,t-1])
     } # t
     mh1 <- sum(dbinom(z[,-1], 1, z[,-nyear] * phi + (1 - z[,-nyear]) * gamma_star, log=TRUE)) + 
-           dnorm(log(kappa_star), log_kappa_mean, log_kappa_sd, log=TRUE) + 
-           log(kappa_star) # Jacobian adjustment
+           dnorm(log(kappa_star), log_kappa_mean, log_kappa_sd, log=TRUE)
     mh2 <- sum(dbinom(z[,-1], 1, z[,-nyear] * phi + (1 - z[,-nyear]) * gamma     , log=TRUE)) + 
-           dnorm(log(kappa     ), log_kappa_mean, log_kappa_sd, log=TRUE) + 
-           log(kappa     ) # Jacobian adjustment
+           dnorm(log(kappa     ), log_kappa_mean, log_kappa_sd, log=TRUE)
     mh <- exp(mh1 - mh2)
     if (mh > runif(1)) {
       kappa <- kappa_star
