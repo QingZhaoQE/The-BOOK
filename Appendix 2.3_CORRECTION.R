@@ -171,11 +171,9 @@ adj_dynam_occu_mcmc <- function(y, x, w, a, nmcmc) {
       gamma_star_zeta[,t-1] <- 1 - (1 - zeta_star) ^ neighbor_sum * (1 - delta)
     } # t
     mh1 <- sum(dbinom(z[,-1], 1, z[,-nyear] * phi + (1 - z[,-nyear]) * gamma_star_zeta, log=TRUE)) + 
-           dnorm(logit(zeta_star), logit_zeta_mean, logit_zeta_sd, log=TRUE) +
-           log(zeta_star * (1 - zeta_star)) # Jacobian adjustment
+           dnorm(logit(zeta_star), logit_zeta_mean, logit_zeta_sd, log=TRUE)
     mh2 <- sum(dbinom(z[,-1], 1, z[,-nyear] * phi + (1 - z[,-nyear]) * gamma          , log=TRUE)) + 
-           dnorm(logit(zeta), logit_zeta_mean, logit_zeta_sd, log=TRUE) +
-           log(zeta * (1 - zeta))           # Jacobian adjustment
+           dnorm(logit(zeta     ), logit_zeta_mean, logit_zeta_sd, log=TRUE)
     mh <- exp(mh1 - mh2)
     if (mh > runif(1)) {
       zeta <- zeta_star
@@ -190,11 +188,9 @@ adj_dynam_occu_mcmc <- function(y, x, w, a, nmcmc) {
         gamma_star_delta[,t-1] <- 1 - (1 - zeta) ^ neighbor_sum * (1 - delta_star)
     } # t
     mh1 <- sum(dbinom(z[,-1], 1, z[,-nyear] * phi + (1 - z[,-nyear]) * gamma_star_delta, log=TRUE)) + 
-           dnorm(logit(delta_star), logit_delta_mean, logit_delta_sd, log=TRUE) +
-           log(delta_star * (1 - delta_star)) # Jacobian adjustment
+           dnorm(logit(delta_star), logit_delta_mean, logit_delta_sd, log=TRUE)
     mh2 <- sum(dbinom(z[,-1], 1, z[,-nyear] * phi + (1 - z[,-nyear]) * gamma, log=TRUE)) + 
-           dnorm(logit(delta), logit_delta_mean, logit_delta_sd, log=TRUE) +
-           log(delta * (1 - delta))           # Jacobian adjustment
+           dnorm(logit(delta     ), logit_delta_mean, logit_delta_sd, log=TRUE)
     mh <- exp(mh1 - mh2)
     if (mh > runif(1)) {
       delta <- delta_star
